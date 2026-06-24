@@ -11,7 +11,7 @@
 export const appConfig = {
   // name of this config file, eg "my website", "development", "production"
   // for troubleshooting
-  configName: "real config",
+  configName: "bad conf",
 
   // flavor of HU hat icon to display
   // accepted values are "normal", "beta", "dev" (default is "dev")
@@ -99,15 +99,15 @@ export const appConfig = {
   // strings are also acceptable
 
   // local postgresql server:
-    db: process.env.DATABASE_URL,
+  //db: "postgresql://user:secret@127.0.0.1/dbname",
 
-  db: {
-  user: globalThis.process?.env?.PGUSER,
-  password: globalThis.process?.env?.PGPASSWORD,
-  host: globalThis.process?.env?.PGHOST,
-  port: Number(globalThis.process?.env?.PGPORT),
-  database: globalThis.process?.env?.PGDATABASE,
-}
+  //db: {
+  //  user: "user",
+  //  password: "secret",
+  //  host: "127.0.0.1",
+  //  port: 5432,
+  //  database: "dbname",
+  //},
 
   /// STRIPE CONFIG
   // - ASSIGN A STRIPE CUSTOMER ID TO EACH USER
@@ -134,10 +134,10 @@ export const appConfig = {
   // HCAPTCHA CONFIG
   // HIGHLY RECOMMENDED
   // https://www.hcaptcha.com/ integration
-  hcaptcha: {
-    siteKey: "9feaa068-4a78-4b3e-b21e-ac8c52ee12a8",
-    secret: "ES_488af01aac944e7a8fd2489f9d1b31b0",
-  },
+  //hcaptcha: {
+  //  siteKey: "10000000-ffff-ffff-ffff-000000000001",
+  //  secret: "0x0000000000000000000000000000000000000000",
+  //},
 
   // DISCORD CONFIG
   // - USES OAUTH2 TO LINK DISCORD ACC TO DASHBOARD
