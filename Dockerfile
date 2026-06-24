@@ -13,7 +13,7 @@ COPY . .
 COPY ./config/config.example.js ./config/config.js
 
 RUN apk add --upgrade --no-cache python3 make g++
-RUN npm install
+RUN npm install --ignore-scripts
 RUN npm run build
 
 ENTRYPOINT [ "node" ]
