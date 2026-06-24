@@ -88,10 +88,21 @@ export async function setupBareMux() {
   if (transport === "epoxy") {
     const wispUrl = getWispUrl();
     console.log("Using wisp at", wispUrl);
-    await connection.setTransport(routes.assets.epoxyIndex, [
-      { wisp: wispUrl },
-    ]);
-    console.log("Transport set!");
+    try {
+      await connection.setTransport(routes.assets.epoxyIndex, [
+        { wisp: wispUrl },
+      ]);
+      console.log("Transport set!");
+    } catch (err) {
+      console.warn(
+        "Epoxy transport failed, falling back to bare transport:",
+        err,
+      );
+      const bareUrl = getBareUrl();
+      console.log("Using bare at", bareUrl);
+      await connection.setTransport(routes.assets.baremodIndex, [bareUrl]);
+      console.log("Bare transport set!");
+    }
   } else {
     const bareUrl = getBareUrl();
     console.log("Using bare at", bareUrl);
