@@ -11,7 +11,7 @@
 export const appConfig = {
   // name of this config file, eg "my website", "development", "production"
   // for troubleshooting
-  configName: "example config",
+  configName: "real config",
 
   // flavor of HU hat icon to display
   // accepted values are "normal", "beta", "dev" (default is "dev")
@@ -101,13 +101,13 @@ export const appConfig = {
   // local postgresql server:
     db: process.env.DATABASE_URL,
 
-    db: {
-  user: process.env.PGUSER,
-  password: process.env.PGPASSWORD,
-  host: process.env.PGHOST,
-  port: 5432
-  database: process.env.PGDATABASE,
-},
+  db: {
+  user: globalThis.process?.env?.PGUSER,
+  password: globalThis.process?.env?.PGPASSWORD,
+  host: globalThis.process?.env?.PGHOST,
+  port: Number(globalThis.process?.env?.PGPORT),
+  database: globalThis.process?.env?.PGDATABASE,
+}
 
   /// STRIPE CONFIG
   // - ASSIGN A STRIPE CUSTOMER ID TO EACH USER
