@@ -101,13 +101,13 @@ export const appConfig = {
   // local postgresql server:
     db: process.env.DATABASE_URL,
 
-  //db: {
-  //  user: "user",
-  //  password: "secret",
-  //  host: "127.0.0.1",
-  //  port: 5432,
-  //  database: "dbname",
-  //},
+    db: {
+  user: process.env.PGUSER,
+  password: process.env.PGPASSWORD,
+  host: process.env.PGHOST,
+  port: 5432
+  database: process.env.PGDATABASE,
+},
 
   /// STRIPE CONFIG
   // - ASSIGN A STRIPE CUSTOMER ID TO EACH USER
