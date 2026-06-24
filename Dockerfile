@@ -11,6 +11,7 @@ COPY ./config/config.example.js ./config/config.js
 RUN apk add --upgrade --no-cache python3 make g++
 RUN npm install -g husky
 RUN npm install
+RUN npm rebuild
 RUN npm run build
 ENTRYPOINT [ "node" ]
 CMD ["run-server.js"]
