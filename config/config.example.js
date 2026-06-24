@@ -11,7 +11,7 @@
 export const appConfig = {
   // name of this config file, eg "my website", "development", "production"
   // for troubleshooting
-  configName: "example config",
+  configName: "bad conf",
 
   // flavor of HU hat icon to display
   // accepted values are "normal", "beta", "dev" (default is "dev")
