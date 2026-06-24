@@ -1,4 +1,4 @@
-FROM node:24-alpine
+FROM node:24
 ENV NODE_ENV=production
 ENV HUSKY=0
 EXPOSE 8080/tcp
@@ -8,10 +8,9 @@ LABEL description="Example application of Holy Unblocker's frontend which can be
 WORKDIR /app
 COPY . .
 COPY ./config/config.example.js ./config/config.js
-RUN apk add --upgrade --no-cache python3 make g++
+RUN apt-get update && apt-get install -y python3 make g++
 RUN npm install -g husky
 RUN npm install
-RUN npm rebuild
 RUN npm run build
 ENTRYPOINT [ "node" ]
 CMD ["run-server.js"]
