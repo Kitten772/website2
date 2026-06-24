@@ -24,8 +24,6 @@ pnpm-debug.log*
 .idea/
 
 
-/config/config.js
-
 # lock files
 pnpm-lock.yaml
 bun.lockb
