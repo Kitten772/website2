@@ -99,9 +99,9 @@ export const appConfig = {
   // strings are also acceptable
 
   // local postgresql server:
-  //  db: process.env.DATABASE_URL,
+    db: process.env.Postgres.DATABASE_URL,
 
-  db: {
+//  db: {
   user: globalThis.process?.env?.PGUSER,
   password: globalThis.process?.env?.PGPASSWORD,
   host: globalThis.process?.env?.PGHOST,
