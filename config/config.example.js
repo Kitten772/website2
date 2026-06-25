@@ -5,7 +5,7 @@
 // - not hosting theatre files locally, mirrors holyunb.locker for thumbnails and game files
 // - hosts wisp-server-node
 
-/**
+/**t
  * @type {import("./config").AppConfig}
  */
 export const appConfig = {
@@ -99,7 +99,7 @@ export const appConfig = {
   // strings are also acceptable
 
   // local postgresql server:
-    db: process.env.DATABASE_URL,
+  //  db: process.env.DATABASE_URL,
 
   db: {
   user: globalThis.process?.env?.PGUSER,
@@ -107,7 +107,7 @@ export const appConfig = {
   host: globalThis.process?.env?.PGHOST,
   port: Number(globalThis.process?.env?.PGPORT),
   database: globalThis.process?.env?.PGDATABASE,
-}
+},
 
   /// STRIPE CONFIG
   // - ASSIGN A STRIPE CUSTOMER ID TO EACH USER
