@@ -1,4 +1,6 @@
-import { db } from "./config/apis.js";
+import { getDB } from "./config/apis.js";
+
+const db = await getDB();
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
