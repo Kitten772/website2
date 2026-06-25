@@ -99,6 +99,7 @@ export const appConfig = {
   // strings are also acceptable
 
   // local postgresql server:
+  console.log("DATABASE_URL =", process.env.DATABASE_URL);
     db: process.env.DATABASE_URL,
 
 //  db: {
