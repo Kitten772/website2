@@ -6,23 +6,33 @@ import Dockerode from "dockerode";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const dbEnabled = "db" in appConfig;
+/**
+ * Feature flags
+ */
+export const dbEnabled = Boolean(appConfig.db);
 export const stripeEnabled = dbEnabled && "stripe" in appConfig;
 export const nowpaymentsEnabled = dbEnabled && "nowpayments" in appConfig;
 export const accountsEnabled = stripeEnabled || nowpaymentsEnabled;
 export const userSystemEnabled = dbEnabled;
+
 export const theatreAdminSignupEnabled =
-  dbEnabled && appConfig.theatre.adminSignupEnabled === true;
+  dbEnabled && appConfig.theatre?.adminSignupEnabled === true;
+
 export const theatrePlayCountingEnabled =
-  dbEnabled && appConfig.theatre.playCountingEnabled !== false;
+  dbEnabled && appConfig.theatre?.playCountingEnabled !== false;
+
 export const discordEnabled = accountsEnabled && "discord" in appConfig;
+
 export const discordListening =
-  discordEnabled && "listenForJoins" in appConfig.discord;
+  discordEnabled && appConfig.discord?.listenForJoins === true;
+
 export const hcaptchaEnabled = accountsEnabled && "hcaptcha" in appConfig;
 
-// when theatre files are hosted locally, admins can upload/remove thumbnails
-export const theatreFilesEnabled = "filesPath" in appConfig.theatre;
-// resolved the same way runtime.js does (relative to the project root)
+/**
+ * Theatre file path (optional)
+ */
+export const theatreFilesEnabled = Boolean(appConfig.theatre?.filesPath);
+
 export const theatreFilesPath = theatreFilesEnabled
   ? resolve(
       dirname(fileURLToPath(import.meta.url)),
@@ -31,67 +41,87 @@ export const theatreFilesPath = theatreFilesEnabled
     )
   : undefined;
 
-export const db = await initDB();
-
 /**
- *
- * @returns {Promise<pg.Client>}
+ * =========================
+ * DATABASE (FIXED)
+ * =========================
+ * Lazy connection - NO build-time DB access
  */
-async function initDB() {
-  if (!dbEnabled) return undefined;
 
-  if (globalThis.hu_db) return globalThis.hu_db;
+let dbClient = null;
 
-  const cli = new pg.Client(appConfig.db);
+export async function getDB() {
+  if (!dbEnabled) return null;
 
-  cli.connect().catch((err) => {
+  if (dbClient) return dbClient;
+
+  if (!appConfig.db) {
+    throw new Error("DATABASE_URL is missing in environment variables");
+  }
+
+  dbClient = new pg.Client({
+    connectionString: appConfig.db,
+  });
+
+  try {
+    await dbClient.connect();
+    console.log("DB connected successfully");
+  } catch (err) {
     console.log("failure connecting to db");
     console.error(err);
     process.exit(1);
-  });
+  }
 
-  globalThis.hu_db = cli;
-
-  return cli;
+  return dbClient;
 }
 
+/**
+ * Stripe
+ */
 export const stripe = stripeEnabled
   ? new Stripe(appConfig.stripe.secret)
-  : undefined;
+  : null;
 
+/**
+ * Docker
+ */
 export const docker = accountsEnabled
   ? new Dockerode(appConfig.docker)
-  : undefined;
+  : null;
 
+/**
+ * Mailer
+ */
 export const mailer = accountsEnabled
   ? nodemailer.createTransport(appConfig.mailer.transport)
-  : undefined;
+  : null;
 
-// add some safeguards
+/**
+ * Prevent accidental access when disabled
+ */
 if (!accountsEnabled) {
   const traps = {};
 
-  for (const prop of ["stripe", "docker", "mailer", "discord"])
+  for (const prop of ["stripe", "docker", "mailer", "discord"]) {
     traps[prop] = {
       enumerable: false,
       get: () => {
         throw new TypeError(
-          `Tried to get appConfig.${prop}, but stripe support isn't enabled.`,
+          `Tried to access ${prop}, but accounts system is disabled.`,
         );
       },
     };
+  }
 
   Object.defineProperties(appConfig, traps);
 }
 
 /**
- *
- * @param {import("@lib/models").UserModel} user
- * @param {number} tier
- * @param {boolean} deleteRoles
- * @returns {boolean}
+ * Discord role sync
  */
 export async function giveTierDiscordRoles(user) {
+  if (!appConfig.discord) return false;
+
   const roleIds = [appConfig.discord.roleIds.premium];
 
   const isPremium = Date.now() < user.paid_until.getTime();
@@ -103,11 +133,10 @@ export async function giveTierDiscordRoles(user) {
       roleId,
       "to",
       user.discord_id,
-      "in guild",
+      "guild",
       appConfig.discord.guildId,
     );
 
-    // https://discord.com/developers/docs/resources/guild#add-guild-member-role
     const res = await fetch(
       `https://discord.com/api/v10/guilds/${appConfig.discord.guildId}/members/${user.discord_id}/roles/${roleId}`,
       {
@@ -115,17 +144,16 @@ export async function giveTierDiscordRoles(user) {
         headers: {
           authorization: `Bot ${appConfig.discord.botToken}`,
           "x-audit-log-reason": `${
-            isPremium ? "Subscribed to" : "Unsubscribed from"
+            isPremium ? "Subscribed" : "Unsubscribed"
           } premium (${user.id})`,
         },
       },
     );
 
     if (res.status !== 204) {
-      // they probably aren't in the guild
       if (res.status === 404) return false;
 
-      console.error("Error giving user role:", res.status, res.statusText);
+      console.error("Error giving role:", res.status, res.statusText);
       throw new Error(await res.text());
     }
   }
