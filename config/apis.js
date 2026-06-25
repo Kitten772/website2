@@ -41,39 +41,15 @@ export const theatreFilesPath = theatreFilesEnabled
     )
   : undefined;
 
-/**
- * =========================
- * DATABASE (FIXED)
- * =========================
- * Lazy connection - NO build-time DB access
- */
 
-let dbClient = null;
+ 
+ import pg from "pg";
 
-export async function getDB() {
-  if (!dbEnabled) return null;
+const DATABASE_URL = process.env.DATABASE_URL;
 
-  if (dbClient) return dbClient;
-
-  if (!appConfig.db) {
-    throw new Error("DATABASE_URL is missing in environment variables");
-  }
-
-  dbClient = new pg.Client({
-    connectionString: appConfig.db,
-  });
-
-  try {
-    await dbClient.connect();
-    console.log("DB connected successfully");
-  } catch (err) {
-    console.log("failure connecting to db");
-    console.error(err);
-    process.exit(1);
-  }
-
-  return dbClient;
-}
+export const db = DATABASE_URL
+  ? new pg.Client({ connectionString: DATABASE_URL })
+  : null;
 
 /**
  * Stripe
