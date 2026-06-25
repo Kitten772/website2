@@ -102,12 +102,12 @@ export const appConfig = {
     db: process.env.Postgres.DATABASE_URL,
 
 //  db: {
-  user: globalThis.process?.env?.PGUSER,
-  password: globalThis.process?.env?.PGPASSWORD,
-  host: globalThis.process?.env?.PGHOST,
-  port: Number(globalThis.process?.env?.PGPORT),
-  database: globalThis.process?.env?.PGDATABASE,
-},
+//  user: globalThis.process?.env?.PGUSER,
+//  password: globalThis.process?.env?.PGPASSWORD,
+ // host: globalThis.process?.env?.PGHOST,
+// port: Number(globalThis.process?.env?.PGPORT),
+ // database: globalThis.process?.env?.PGDATABASE,
+//},
 
   /// STRIPE CONFIG
   // - ASSIGN A STRIPE CUSTOMER ID TO EACH USER
